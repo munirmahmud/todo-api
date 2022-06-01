@@ -22,11 +22,15 @@ exports.fetchTasks = async (req, res) => {
 
 exports.fetchTask = async (req, res) => {
   try {
-    const { id } = req.body;
-    const task = await Task.findById(id);
+    const task = await Task.findOne({ _id: req.params.id });
+
+    if (!task) {
+      return res.status(404).json({ message: "No task found with that ID", statusCode: 404, status: "failed" });
+    }
 
     res.status(200).json({ task, statusCode: 200, status: "success" });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message, statusCode: 500, status: "failed" });
   }
 };
@@ -34,6 +38,21 @@ exports.fetchTask = async (req, res) => {
 exports.updateTask = (req, res) => {
   res.send("Update tasks");
 };
-exports.deleteTask = (req, res) => {
-  res.send("delete tasks");
+
+exports.deleteTask = async (req, res) => {
+  try {
+    const task = await Task.findOne({ _id: req.params.id });
+
+    console.log("hi", task);
+    if (!task) {
+      return res.status(404).json({ message: "No task found with that ID", statusCode: 404, status: "failed" });
+    }
+
+    // await Task.findOneAndDelete({ _id: req.params.id });
+
+    res.status(200).json({ message: "The task has been deleted successfully.", statusCode: 200, status: "success" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message, statusCode: 500, status: "failed" });
+  }
 };
